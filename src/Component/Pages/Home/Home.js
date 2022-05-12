@@ -1,5 +1,6 @@
 import React from 'react';
 import ContactUs from '../ContactUs/ContactUs';
+import Footer from '../Footer/Footer';
 import Appointment from './Appointment/Appointment';
 import Banner from './Banner/Banner';
 import Care from './Care';
