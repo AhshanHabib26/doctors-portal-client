@@ -60,7 +60,7 @@ const Signup = () => {
                   </Link>
                 </small>
                 <div class="divider">OR</div>
-                <button className="btn  capitalize w-full text-white">
+                <button className="btn btn-outline btn-accent  capitalize w-full">
                    Continue With Google
                   </button>
               </div>
