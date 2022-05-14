@@ -1,13 +1,29 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import auth from "../../../../firebase.init";
+import { useCreateUserWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth';
 
 const Signup = () => {
+
+  const [
+    createUserWithEmailAndPassword,
+    user,
+    loading,
+    error,
+  ] = useCreateUserWithEmailAndPassword(auth);
+
+  const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
+
     const {
         register,
         handleSubmit,
       } = useForm();
-      const onSubmit = (data) => console.log(data);
+
+      const onSubmit = (data) => {
+        createUserWithEmailAndPassword(data.Email, data.Password)
+      };
+
       return (
         <div className="flex h-screen justify-center items-center">
           <div>
@@ -60,7 +76,7 @@ const Signup = () => {
                   </Link>
                 </small>
                 <div class="divider">OR</div>
-                <button className="btn btn-outline btn-accent  capitalize w-full">
+                <button onClick={() => signInWithGoogle()} className="btn btn-outline btn-accent  capitalize w-full">
                    Continue With Google
                   </button>
               </div>
