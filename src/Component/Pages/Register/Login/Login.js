@@ -1,59 +1,77 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import auth from "../../../../firebase.init";
+import Loading from "../../../Loading/Loading";
 
 const Login = () => {
 
-  const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
+  const [signInWithGoogle, gUser, gLoading] = useSignInWithGoogle(auth);
+  const [ signInWithEmailAndPassword, user, loading, error, ] = useSignInWithEmailAndPassword(auth);
+  const { register, handleSubmit} = useForm();
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const [
-    signInWithEmailAndPassword,
-    user,
-    loading,
-    error,
-  ] = useSignInWithEmailAndPassword(auth);
+  let from = location.state?.from?.pathname || "/";
 
-  const {
-    register,
-    handleSubmit,
-  } = useForm();
+  useEffect( () =>{
+    if (user || gUser) {
+      navigate(from, { replace: true });
+      toast.success('Welcome! My Doctors Portal Hub')
+    }
+  },[user, gUser, location, navigate, from])
+
+  useEffect( () =>{
+    if(error){
+      toast.error('User Not Found')
+    }
+  },[error])
+
+
+  if(loading || gLoading){
+    return <Loading/>
+  }
+
+
+
+  
   const onSubmit = (data) => {
     signInWithEmailAndPassword( data.Email, data.Password)
-    console.log(data)
+    
   };
   return (
     <div className="flex h-screen justify-center items-center">
       <div>
-        <div class="card w-96 bg-base-100 shadow-xl">
-          <div class="card-body">
+        <div className="card w-96 bg-base-100 shadow-xl">
+          <div className="card-body">
             <h2 className=" text-center text-xl font-bold text-accent">Login</h2>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div class="form-control w-full max-w-xs">
-                <label class="label">
-                  <span class="label-text">Email</span>
+              <div className="form-control w-full max-w-xs">
+                <label className="label">
+                  <span className="label-text">Email</span>
                 </label>
                 <input
                   type="email"
-                  class="input input-bordered w-full max-w-xs"
+                  className="input input-bordered w-full max-w-xs"
                   {...register("Email", {
                     required: true,
                   })}
                 />
               </div>
-              <div class="form-control w-full max-w-xs">
-                <label class="label">
-                  <span class="label-text">Password</span>
+              <div className="form-control w-full max-w-xs">
+                <label className="label">
+                  <span className="label-text">Password</span>
                 </label>
                 <input
                   type="password"
-                  class="input input-bordered w-full max-w-xs"
+                  className="input input-bordered w-full max-w-xs"
                   {...register("Password", { required: true, maxLength: 8 })}
                 />
               </div>
 
-              <button class="btn w-full mt-3 capitalize text-white" type="submit">
+              <button className="btn w-full mt-3 capitalize text-white" type="submit">
                 Login
               </button>
             </form>
@@ -64,7 +82,7 @@ const Login = () => {
                 Create An Account
               </Link>
             </small>
-            <div class="divider">OR</div>
+            <div className="divider">OR</div>
             <button onClick={() => signInWithGoogle()} className="btn btn-outline btn-accent  capitalize w-full">
                Continue With Google
               </button>
