@@ -1,8 +1,45 @@
 import { format } from "date-fns";
 import React from "react";
+import { toast } from "react-toastify";
 
-const Booking = ({ treatment, date }) => {
+const Booking = ({setTreatment, treatment, date }) => {
   const { name, slots } = treatment;
+  const formateDate = format(date, "PP");
+
+  const handleSubmit = (e) => {
+    const slot = e.target.slot.value;
+    const email = e.target.email.value;
+    const phoneNumber = e.target.phone.value;
+    const userName = e.target.name.value;
+
+    const bookingData = {
+      name: name,
+      date: formateDate,
+      slot,
+      email,
+      phoneNumber,
+      userName,
+    };
+
+    fetch("http://localhost:5000/user", {
+      method: "POST",
+      body: JSON.stringify(bookingData),
+      headers: {
+        "Content-type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if(data){
+          toast.success('Your Booking Added')
+        }
+      });
+
+    console.log(bookingData);
+    e.preventDefault();
+    setTreatment(null)
+  };
+
   return (
     <div>
       <input type="checkbox" id="my-booking" className="modal-toggle" />
@@ -15,24 +52,28 @@ const Booking = ({ treatment, date }) => {
             ✕
           </label>
           <h3 className="font-bold text-lg">{name}</h3>
-          <form className=" w-11/12 justify-items-center grid grid-cols-1 gap-3 mt-3">
+          <form
+            onSubmit={handleSubmit}
+            className=" w-11/12 justify-items-center grid grid-cols-1 gap-3 mt-3"
+          >
             <input
               type="text"
+              name="date"
               readOnly
               disabled
               value={format(date, "PP")}
               className="input input-bordered w-full max-w-xs"
             />
-            <select className="select w-full max-w-xs">
+            <select name="slot" className="select w-full max-w-xs">
               {slots.map((slot) => (
-                <option  value={slot}>{slot}</option>
+                <option value={slot}>{slot}</option>
               ))}
             </select>
             <input
-              name="name"
-              type="text"
+              name="email"
+              type="email"
               required
-              placeholder="Your Name"
+              placeholder="Your Email"
               className="input input-bordered w-full max-w-xs"
             />
             <input
@@ -43,13 +84,15 @@ const Booking = ({ treatment, date }) => {
               className="input input-bordered w-full max-w-xs"
             />
             <input
-              name="email"
-              type="email"
+              name="name"
+              type="text"
               required
               placeholder="Your Name"
               className="input input-bordered w-full max-w-xs"
             />
-            <button className="btn btn-outline btn-accent w-full max-w-xs">Button</button>
+            <button className="btn btn-outline btn-accent w-full max-w-xs">
+              Button
+            </button>
           </form>
         </div>
       </div>
