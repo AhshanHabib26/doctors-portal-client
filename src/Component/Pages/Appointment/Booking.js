@@ -1,14 +1,19 @@
 import { format } from "date-fns";
 import React from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { toast } from "react-toastify";
+import auth from "../../../firebase.init";
+
 
 const Booking = ({setTreatment, treatment, date }) => {
   const { name, slots } = treatment;
   const formateDate = format(date, "PP");
+  const [user] = useAuthState(auth);
+
 
   const handleSubmit = (e) => {
     const slot = e.target.slot.value;
-    const email = e.target.email.value;
+    const email = user.email
     const phoneNumber = e.target.phone.value;
     const userName = e.target.name.value;
 
@@ -70,8 +75,8 @@ const Booking = ({setTreatment, treatment, date }) => {
               ))}
             </select>
             <input
-              name="email"
               type="email"
+              value={user.email}
               required
               placeholder="Your Email"
               className="input input-bordered w-full max-w-xs"
