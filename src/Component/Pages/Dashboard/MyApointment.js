@@ -9,9 +9,18 @@ const MyApointment = () => {
   const [user, loading] = useAuthState(auth);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/user?email=${user?.email}`)
+    fetch(`http://localhost:5000/user?email=${user?.email}`, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
       .then((res) => res.json())
-      .then((data) => setBooking(data));
+      .then((data) => {
+        const accessToken = data.token;
+        localStorage.setItem("accessToken", accessToken);
+        setBooking(data.result);
+      });
   }, [user]);
 
   if (loading) {
@@ -23,7 +32,7 @@ const MyApointment = () => {
       <h1 className=" text-xl font-semibold text-secondary italic">
         My Appointment: {booking.length}
       </h1>
-      <table class="table w-full">
+      <table className="table w-full">
         <thead>
           <tr>
             <th></th>
@@ -35,7 +44,7 @@ const MyApointment = () => {
         </thead>
         <tbody>
           {booking.map((item, index) => (
-            <tr>
+            <tr key={item._id}>
               <th>{index + 1}</th>
               <td>{item.userName}</td>
               <td>{item.name}</td>
